@@ -1,0 +1,37 @@
+1. С помощью команды mrec_prepare делим датасет на train и test.
+2. Далее командой ipcluster start -n4 –daemonize включим 4 ядра для расчета.
+3. На первом шаге мы получили файлы train, теперь обучимся на них с помощью команды mrec_train.
+4. Сделаем предсказание используя команду mrec_predict.
+5. Итоги:
+- Модель:
+SLIM(SGDRegressor(alpha=0.0011, average=False, epsilon=0.1, eta0=0.01,
+       fit_intercept=False, l1_ratio=0.909090909091,
+       learning_rate='invscaling', loss='squared_loss', max_iter=None,
+       n_iter=None, penalty='elasticnet', power_t=0.25, random_state=None,
+       shuffle=True, tol=None, verbose=0, warm_start=False))
+- Результаты:
+mrr            0.6878 +/- 0.0030
+prec@5         0.4325 +/- 0.0027
+prec@10        0.3740 +/- 0.0010
+prec@15        0.3355 +/- 0.0014
+prec@20        0.3096 +/- 0.0011
+
+Попробуем изменить метод на KNN (mrec_train -n4 --input_format tsv --model knn --train "splits/u.data.train.*" --outdir models_knn):
+- Модель:
+CosineKNNRecommender(k=100)
+- Результаты:
+mrr            0.6246 +/- 0.0043
+prec@5         0.4056 +/- 0.0041
+prec@10        0.3572 +/- 0.0033
+prec@15        0.3252 +/- 0.0020
+prec@20        0.3002 +/- 0.0021
+
+Взглянем на резултаты метода slim (mrec_train --num_engines 4 --input_format tsv --model popularity --train "splits/u.data.train.*" --outdir models_popularity):
+- Модель:
+ItemPop
+- Результаты:
+mrr            0.5100 +/- 0.0070
+prec@5         0.2596 +/- 0.0030
+prec@10        0.2449 +/- 0.0015
+prec@15        0.2280 +/- 0.0005
+prec@20        0.2123 +/- 0.0016
